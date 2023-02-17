@@ -1,3 +1,4 @@
+// KEY:VALUE // NAME:VALUE
 const person = {
     // Properties
     firstName: "Jagan",

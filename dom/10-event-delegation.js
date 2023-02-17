@@ -9,8 +9,8 @@ document.body.addEventListener("click", deleteItem);
 function deleteItem(e){
     if(e.target.parentElement.className === "delete-item secondary-content"){
         e.target.parentElement.parentElement.remove();
-        console.log(e.target);
-        console.log(e.target.parentElement);
-        console.log(e.target.parentElement.parentElement);
+        // console.log(e.target);
+        // console.log(e.target.parentElement);
+        // console.log(e.target.parentElement.parentElement);
     }
 }   
