@@ -26,7 +26,7 @@ function Person(firstName, lastName){
 const javid = new Person("Jagan", "Javid");
 const josh = new Person("josh", "sri");
 
-console.log(javid.fullName());
+console.log(javid);
 console.log(josh.fullName());
 
 // function Test(){}
