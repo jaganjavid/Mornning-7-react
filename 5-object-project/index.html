@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Project</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+</head>
+<body>
+    <div class="container"> 
+
+        <h1>Book List</h1>
+
+        <form id="book-form">
+
+            <!-- Grid -->
+            <div class="grid">
+              <label for="bookname">
+                Book Name
+                <input type="text" id="bookname" name="bookname" placeholder="Enter your book name">
+              </label>          
+            </div>
+
+            <div class="grid">   
+              <label for="author">
+                Author name
+                <input type="text" id="author" name="author" placeholder="Enter author name">
+              </label>
+            </div>
+
+            <div class="grid"> 
+              <label for="number">
+                ISBN
+                <input type="number" id="isbn" name="isbn" placeholder="Enter ISBN">
+              </label>
+            </div>
+          
+          
+            <!-- Button -->
+            <button type="submit">Add Book</button>
+          
+          </form>
+
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">ISBN</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody id="book-list"></tbody>
+          </table>
+    </div>
+
+    <script src="./app.js"></script>
+</body>
+</html>
