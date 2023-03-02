@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Project</title>
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <style>
+      .alert{
+        margin-bottom: 20px;
+        padding: 10px;
+      }
+
+      .success{
+        background-color: green;
+      }
+
+      .error{
+        background-color: red;
+      }
+    </style>
 </head>
 <body>
     <div class="container"> 
@@ -48,7 +62,7 @@
                 <th scope="col">Title</th>
                 <th scope="col">Author</th>
                 <th scope="col">ISBN</th>
-                <th scope="col"></th>
+                <th scope="col" class="delete"></th>
               </tr>
             </thead>
             <tbody id="book-list"></tbody>
