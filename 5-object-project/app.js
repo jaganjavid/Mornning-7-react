@@ -91,7 +91,6 @@ document.getElementById("book-form").addEventListener("submit", function(e){
         ui.addBookToList(book);
         ui.showAlert("Book Added", "success");
         ui.clearFields();
-        
     }
     
 })
@@ -111,58 +110,3 @@ document.getElementById("book-list").addEventListener("click", function(e){
     }
 })
 
-
-// setTimeout(function(){
-//     console.log("Hai")
-// }, 3000);
-
-
-
-
-
-
-// UI.prototype.showAlert = function(message,className){
-//     //   Create Div
-    
-//     const div = document.createElement("div");
-//     // Add Class to div
-//     div.className = `alert ${className}`;
-
-//     // Add a style to based on classes
-
-//     if(div.classList.contains("alert")){
-//         div.style.marginBottom = "20px";
-//         div.style.padding = "5px";
-//         div.style.background = "#ffffff";
-//     }
-
-//     if(div.classList.contains("success")){
-//         div.style.background = "green";
-//     } else {
-//         div.style.background = "red";
-//     }
-
-//     // Add Text 
-//     div.appendChild(document.createTextNode(message));
-
-//     // Get Container
-//     const container = document.querySelector(".container");
-
-//     // Get form
-//     const form = document.querySelector("#book-form");
-
-//     // Insert Alert 
-//     container.insertBefore(div, form);
-
-//     // Timeout after 3 sec
-//     setTimeout(function(){
-//         document.querySelector(".alert").remove();
-//     }, 3000)
-
-//     }
-    
-//     UI.prototype.deleteBook = function(target){
-//         if(target.className === "delete"){
-//             target.parentElement.remove();
-//         }
-//     }
