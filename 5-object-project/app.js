@@ -7,6 +7,68 @@ function Book(title, author, isbn){
 }
 
 
+// Store Constructor
+
+function Store(){
+    Store.prototype.getBooks = function(){
+        let books;
+
+        if(localStorage.getItem("books") === null){
+            books = [];
+        } else {
+            books = JSON.parse(localStorage.getItem('books'));
+        }
+
+        return books;
+    }
+
+    Store.prototype.displayBooks = function(){
+        const store = new Store();
+        const books = store.getBooks();
+        books.forEach(function(book){
+            const list = document.querySelector("#book-list");
+
+            // Create tr element
+            const row = document.createElement("tr");
+      
+             // Insert Cols
+             row.innerHTML = `
+              <td>${book.title}</td>
+              <td>${book.author}</td>
+              <td>${book.isbn}</td>
+              <td class="delete">X</td>
+              `;
+      
+             list.appendChild(row);
+        })
+    }
+
+    Store.prototype.addBooks = function(book){
+        const store = new Store();
+        const books = store.getBooks(); // array        
+        books.push(book);
+        localStorage.setItem("books", JSON.stringify(books));
+    }
+
+    Store.prototype.removeBooks = function(isbn){
+        const store = new Store();
+        const books = store.getBooks();
+
+        books.forEach(function(book, index){
+            if(book.isbn === isbn){
+               books.splice(index, 1);
+            }
+        })
+
+        localStorage.setItem("books", JSON.stringify(books));
+    }
+}
+
+
+
+const store = new Store();
+
+
 // UI Constructor
 
 function UI(){
@@ -14,18 +76,20 @@ function UI(){
     UI.prototype.addBookToList = function(book){
        const list = document.querySelector("#book-list");
 
-    // Create tr element
-    const row = document.createElement("tr");
+      // Create tr element
+      const row = document.createElement("tr");
 
-    // Insert Cols
-    row.innerHTML = `
+       // Insert Cols
+       row.innerHTML = `
         <td>${book.title}</td>
         <td>${book.author}</td>
         <td>${book.isbn}</td>
         <td class="delete">X</td>
-    `;
+        `;
 
-    list.appendChild(row);
+       list.appendChild(row);
+
+       store.addBooks(book);
     }
 
     UI.prototype.clearFields = function(){
@@ -63,9 +127,16 @@ function UI(){
     UI.prototype.deleteBook = function(target){
         if(target.className === "delete"){
             target.parentElement.remove();
+            const isbn = target.previousElementSibling.textContent;
+            store.removeBooks(isbn);
         }
     }
 }
+
+
+// DOM LOAD EVENT
+
+document.addEventListener("DOMContentLoaded", store.displayBooks);
 
 
 // Event Listener for add book
