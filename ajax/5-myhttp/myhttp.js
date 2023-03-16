@@ -10,23 +10,44 @@ myHttp.prototype.get = function(url, callback){
     let self = this;
     this.http.onload = function(){
         if(self.http.status === 200){
-            callback(self.http.responseText);
-        } 
+            callback(null , self.http.responseText);
+        } else {
+            callback("Error: " + self.http.status);
+        }
     }
 
     this.http.send();
 }
 
+// Update Post
 
-// var obj = {
-//     run: function(){
-//         console.log(this);
-//         var self = this;
-//         function innerRun(){
-//            console.log(self);
-//         }
-//         innerRun();
-//     }
-// }
+myHttp.prototype.put = function(url, data, callback){
+    this.http.open("PUT", url, true);
 
-// obj.run();
+    this.http.setRequestHeader("Content-type", "application/json");
+
+    let self = this;
+    this.http.onload = function(){
+        callback(null, self.http.responseText);
+    } 
+
+    this.http.send(JSON.stringify(data));
+}
+
+myHttp.prototype.delete = function(url, callback){
+    this.http.open("DELETE", url, true);
+
+    let self = this;
+
+    this.http.onload = function(){
+        if(self.http.status === 200){
+            callback(null, "Post Deleted")
+        }else {
+            callback("Error: " + self.http.status);
+        }
+    } 
+
+    this.http.send();
+}
+
+
