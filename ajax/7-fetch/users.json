@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "name": "Jagan",
+        "company": "jgnAcademy"
+    },
+    {
+        "id": 2,
+        "name": "Javid",
+        "company": "Gettogot"
+    },
+    {
+        "id": 3,
+        "name": "Arun",
+        "company": "ArunTech"
+    }
+]
