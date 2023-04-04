@@ -30,6 +30,9 @@ const itemCtrl = (function(){
     }
 
     return {
+        getAllData:function(){
+          return data;
+        },
         getItem: function(){
             return data.items;
         },
@@ -52,13 +55,42 @@ const itemCtrl = (function(){
             data.items.push(newItem);
 
             return newItem;
+        },
+        getTotalMoney: function(){
+            let total = 0;
+
+            if(data.items.length > 0){
+                data.items.forEach(function(item){
+                    total = total + item.money;
+                    data.totalMoney = total;
+                });
+                return data.totalMoney;
+            } else {
+                return data.totalMoney = 0;
+            }
+            
+        },
+        getItemById: function(id){
+          let found = null;
+
+        //   LOOP Through Items
+
+        data.items.forEach(function(item){
+           if(item.id === id){
+             found = item
+           } 
+        })
+        return found;
+        },
+        setCurrentItem: function(item){
+            data.currentItem = item;
+        },
+        getCurrentItem: function(){
+            return data.currentItem;
         }
     }
 
 }())
-
-
-
 
 
 
@@ -72,7 +104,8 @@ const UICtrl = (function(){
         deleteBtn: ".delete-btn",
         backBtn: ".back-btn",
         inputItem:"item-name",
-        inputMoney: "item-money"
+        inputMoney: "item-money",
+        totalMoney: ".total-money"
     }
 
     return {
@@ -84,7 +117,7 @@ const UICtrl = (function(){
             <li class="collection-item" id="item-${item.id}">
                 <strong>${item.name}:</strong> <em>${item.money}$</em>
                 <a href="#" class="secondary-content">
-                    <i class="fa fa-pencil"></i>
+                    <i class="fa fa-pencil edit-item"></i>
                 </a>
             </li>
             `;
@@ -99,6 +132,12 @@ const UICtrl = (function(){
             document.querySelector(UISelectors.deleteBtn).style.display = "none";
             document.querySelector(UISelectors.backBtn).style.display = "none";
         },
+        showEditState: function(){
+            document.querySelector(UISelectors.addBtn).style.display = "none";
+            document.querySelector(UISelectors.updateBtn).style.display = "inline";
+            document.querySelector(UISelectors.deleteBtn).style.display = "inline";
+            document.querySelector(UISelectors.backBtn).style.display = "inline";
+        },
         getSelectors: function(){
             return UISelectors;
         },
@@ -111,30 +150,31 @@ const UICtrl = (function(){
             }
         },
         addListItem: function(item){
-            
-            // Create ali
+            // Create li
             const li = document.createElement("li");
-
             // Add Class
             li.className = "collection-item";
-
             // Add ID
             li.id = `item-${item.id}`;
-
             // Add HTML
             li.innerHTML = `<strong>${item.name}</strong> <em>${item.money}$</em>
                 <a href="#" class="secondary-content">
-                    <i class="fa fa-pencil"></i>
+                    <i class="fa fa-pencil edit-item"></i>
                 </a>
             </li>`;
 
             // Insert to ul
             document.querySelector(UISelectors.itemList).appendChild(li);
+        },
+        showTotalMoney: function(totalMoney){
+            document.querySelector(UISelectors.totalMoney).textContent = totalMoney;
+        },
+        addItemToForm: function(){
+          const name = document.getElementById(UISelectors.inputItem).value = itemCtrl.getCurrentItem().name;
+          const money = document.getElementById(UISelectors.inputMoney).value = itemCtrl.getCurrentItem().money;
         }
     }
 }())
-
-
 
 
 // App Controller
@@ -146,6 +186,9 @@ const App = (function(itemCtrl,UICtrl){
   const loadEventListeners = function(){
     // Add Item Event
     document.querySelector(selectors.addBtn).addEventListener("click", itemAddSubmit);
+
+    // Edit icon click event
+    document.querySelector(selectors.itemList).addEventListener("click", itemUpdateSubmit)
   }  
 
   const itemAddSubmit = function(e){
@@ -158,6 +201,37 @@ const App = (function(itemCtrl,UICtrl){
      const newItem = itemCtrl.addItem(input.name,input.money);
 
      UICtrl.addListItem(newItem);
+
+    //  ADD TOTAL MONEY
+    const totalMoney = itemCtrl.getTotalMoney();
+
+    UICtrl.showTotalMoney(totalMoney);
+
+
+    }
+  }
+
+  const itemUpdateSubmit = function(e){
+    if(e.target.classList.contains("edit-item")){
+       const listId = e.target.parentElement.parentElement.id;
+    //    Breal into an array
+    const listArr = listId.split("-");
+
+    // Get the Actual id
+    const id = parseInt(listArr[1]);
+    
+    // Get item
+    const itemToEdit = itemCtrl.getItemById(id);
+
+    // Set Current Item
+    itemCtrl.setCurrentItem(itemToEdit);
+
+    // showEditState
+
+    UICtrl.showEditState();
+
+    // Add Item to form
+    UICtrl.addItemToForm();
     }
   }
 
@@ -171,6 +245,11 @@ const App = (function(itemCtrl,UICtrl){
         } else {
             // Populate list with items
             UICtrl.populateItemList(items);
+
+                //  ADD TOTAL MONEY
+            const totalMoney = itemCtrl.getTotalMoney();
+
+            UICtrl.showTotalMoney(totalMoney);
         }
 
         loadEventListeners();
