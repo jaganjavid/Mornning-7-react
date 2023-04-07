@@ -1,8 +1,62 @@
 // Storage Controller
 
-// const StorageCtrl = (function(){
+const StorageCtrl = (function(){
+   return {
+    storeItem: function(item){
+        let items;
 
-// }())
+        // check if any items in ls
+
+        if(localStorage.getItem("items") === null){
+            items = [];
+            
+            items.push(item);
+
+            localStorage.setItem("items", JSON.stringify(items));
+        } else {
+            // get the existing data from the ls
+            items = JSON.parse(localStorage.getItem("items"));
+
+            // push new item
+            items.push(item);
+
+            localStorage.setItem("items", JSON.stringify(items));
+        }
+    },
+    getItemsFromLs: function(){
+        let items;
+        if(localStorage.getItem("items") === null){
+            items = [];
+        } else {
+            // get the existing data from the ls
+            items = JSON.parse(localStorage.getItem("items"));
+        }
+        return items;
+    },
+    updateItemStorage: function(updateItem){
+        let items = JSON.parse(localStorage.getItem("items"));
+        
+        items.forEach(function(item, index){
+            if(updateItem.id === item.id){
+                items.splice(index, 1, updateItem);
+            }
+        })
+        localStorage.setItem("items", JSON.stringify(items));
+    },
+    deleteItemStorage: function(id){
+        let items = JSON.parse(localStorage.getItem("items"));
+        items.forEach(function(item, index){
+            if(id === item.id){
+                items.splice(index, 1);
+            }
+        })
+        localStorage.setItem("items", JSON.stringify(items));
+    },
+    clearItemsFromLs: function(){
+        localStorage.removeItem("items");
+    }
+   };
+}())
 
 
 // Item Controller
@@ -20,11 +74,12 @@ const itemCtrl = (function(){
     // Data Structure / State
 
     const data = {
-        items: [
-            {id:0, name: "Bike", money:3000},
-            {id:1, name: "Phone", money:1500},
-            {id:2, name: "Clothes", money:800},
-        ],
+        // items: [
+        //     // {id:0, name: "Bike", money:3000},
+        //     // {id:1, name: "Phone", money:1500},
+        //     // {id:2, name: "Clothes", money:800},
+        // ],
+        items: StorageCtrl.getItemsFromLs(),
         totalMoney: 0,
         currentItem: null
     }
@@ -41,7 +96,6 @@ const itemCtrl = (function(){
             // Create ID
             if(data.items.length > 0){
                 ID = data.items[data.items.length - 1].id + 1;
-                console.log(ID);
             } else {
                 ID = 0;
             }
@@ -113,6 +167,9 @@ const itemCtrl = (function(){
             const index = ids.indexOf(id);
 
             data.items.splice(index, 1);
+        },
+        clearAllItems: function(){
+            data.items = [];
         }
     }
 
@@ -132,7 +189,8 @@ const UICtrl = (function(){
         inputItem:"item-name",
         inputMoney: "item-money",
         totalMoney: ".total-money",
-        listItems: ".collection-item"
+        listItems: ".collection-item",
+        clearBtn : ".clear-btn"
     }
 
     return {
@@ -224,6 +282,13 @@ const UICtrl = (function(){
         clearInputState: function(){
             const name = document.getElementById(UISelectors.inputItem).value = "";
             const money = document.getElementById(UISelectors.inputMoney).value = "";
+        },
+        removeAllItems: function(){
+            let listItems = document.querySelectorAll(UISelectors.listItems);
+
+            listItems.forEach(function(item){
+                item.remove();
+            })
         }
     }
 }())
@@ -231,7 +296,7 @@ const UICtrl = (function(){
 
 // App Controller
 
-const App = (function(itemCtrl,UICtrl){
+const App = (function(itemCtrl,UICtrl,StorageCtrl){
 
  const selectors = UICtrl.getSelectors(); 
 
@@ -246,7 +311,10 @@ const App = (function(itemCtrl,UICtrl){
     document.querySelector(selectors.updateBtn).addEventListener("click", itemUpdateSubmit);
 
     // Delete item event
-    document.querySelector(selectors.deleteBtn).addEventListener("click", itemDeleteSubmit)
+    document.querySelector(selectors.deleteBtn).addEventListener("click", itemDeleteSubmit);
+
+    // Clear btn 
+    document.querySelector(selectors.clearBtn).addEventListener("click", clearAllItemsClick)
 
     // Back Button Event
     document.querySelector(selectors.backBtn).addEventListener("click", function(e){
@@ -270,11 +338,17 @@ const App = (function(itemCtrl,UICtrl){
     const totalMoney = itemCtrl.getTotalMoney();
 
     UICtrl.showTotalMoney(totalMoney);
+
+    StorageCtrl.storeItem(newItem);
+
+    document.querySelector(".collection").style.display = "block";
+    document.querySelector(".no-item").style.display = "none";
     }
    
   }
 
   const itemEditClick = function(e){
+
     e.preventDefault();
     if(e.target.classList.contains("edit-item")){
     const listId = e.target.parentElement.parentElement.id;
@@ -297,6 +371,7 @@ const App = (function(itemCtrl,UICtrl){
     // Add Item to form
     UICtrl.addItemToForm();
     }
+    
   }
 
   const itemUpdateSubmit = function(e){
@@ -315,6 +390,8 @@ const App = (function(itemCtrl,UICtrl){
     // Add total Money to UI
 
     UICtrl.showTotalMoney(totalMoney);
+
+    StorageCtrl.updateItemStorage(updateItem);
     
     UICtrl.clearEditState();
 
@@ -323,6 +400,9 @@ const App = (function(itemCtrl,UICtrl){
 
   const itemDeleteSubmit = function(e){
     e.preventDefault();
+
+     
+
     // Get Current Item
     const currentItem = itemCtrl.getCurrentItem();
 
@@ -340,14 +420,39 @@ const App = (function(itemCtrl,UICtrl){
     UICtrl.clearEditState();
 
     UICtrl.clearInputState();
+
+    StorageCtrl.deleteItemStorage(currentItem.id);
+
+    const items = itemCtrl.getItem();
+    if(items.length === 0){
+       location.reload();
+    } 
+
+
+ 
   }
+
+
+  const clearAllItemsClick = function(){
+    itemCtrl.clearAllItems();
+    UICtrl.removeAllItems();
+    //  ADD TOTAL MONEY
+    const totalMoney = itemCtrl.getTotalMoney();
+
+    UICtrl.showTotalMoney(totalMoney);
+    StorageCtrl.clearItemsFromLs();
+    document.querySelector(".collection").style.display = "none";
+    document.querySelector(".no-item").style.display = "block";
+}
+
   return {
     init: function(){
         UICtrl.clearEditState();
         const items = itemCtrl.getItem();
 
         if(items.length === 0){
-            console.log("There is no item")
+            document.querySelector(".collection").style.display = "none";
+    
         } else {
             // Populate list with items
             UICtrl.populateItemList(items);
@@ -356,12 +461,16 @@ const App = (function(itemCtrl,UICtrl){
             const totalMoney = itemCtrl.getTotalMoney();
 
             UICtrl.showTotalMoney(totalMoney);
+
+            document.querySelector(".collection").style.display = "block";
+            document.querySelector(".no-item").style.display = "none";
+
         }
 
         loadEventListeners();
     }
   }
-}(itemCtrl,UICtrl))
+}(itemCtrl,UICtrl,StorageCtrl))
 
 // Intitialize App
 
