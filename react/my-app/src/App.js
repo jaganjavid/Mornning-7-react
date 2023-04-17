@@ -1,30 +1,25 @@
 import './App.css';
 import Header from './components/Header';
-import Feedbackitem from './components/Feedbackitem';
-// import { useState } from 'react';
+import { useState } from 'react';
+import FeedbackList from './components/FeedbackList';
+import FeedbackData from "./data/FeedbackData";
 
 function App() {
 
-  // let name = "Jagan";
-
-  // const [name, setName] = useState("Jagan");
-
-  // const handleClick = () => {
-  //   setName("Javid")
-  // }
-
-  // console.log(name);
-
+  const [feedback, setFeedback] = useState(FeedbackData);
   
+  const handleClick = (id) => {
+    if(window.confirm("Are you sure")){
+      setFeedback(feedback.filter((item) => item.id !== id))
+    }
+  }
 
   return (
     <div>
       <Header/>
       <div className='container'>
-        <Feedbackitem/>
+        <FeedbackList feedback={feedback} handleClick={handleClick}/>
       </div>
-      {/* <h2>{name}</h2>
-      <button onClick={handleClick}>Click ME</button> */}
     </div>
   )
 }
