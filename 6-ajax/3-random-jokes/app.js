@@ -10,6 +10,7 @@ function loadJokes(){
     xhr.open("GET", "https://api.chucknorris.io/jokes/random", true);
 
     xhr.onload = function(){
+        console.log("hello");
         if(this.status === 200){
             const joke = JSON.parse(this.responseText);
 

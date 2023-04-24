@@ -7,6 +7,8 @@ function loadData(){
 
     const xhr = new XMLHttpRequest();
 
+    console.log(xhr);
+
     // Open 
 
     xhr.open("GET", "data.txt", true);

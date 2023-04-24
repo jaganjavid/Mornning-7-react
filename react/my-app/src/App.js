@@ -3,6 +3,8 @@ import Header from './components/Header';
 import { useState } from 'react';
 import FeedbackList from './components/FeedbackList';
 import FeedbackData from "./data/FeedbackData";
+import Feedbackstats from './components/Feedbackstats';
+import FeedbackForm from './components/FeedbackForm';
 
 function App() {
 
@@ -18,6 +20,8 @@ function App() {
     <div>
       <Header/>
       <div className='container'>
+        <FeedbackForm/>
+        <Feedbackstats feedback={feedback}/>
         <FeedbackList feedback={feedback} handleClick={handleClick}/>
       </div>
     </div>
