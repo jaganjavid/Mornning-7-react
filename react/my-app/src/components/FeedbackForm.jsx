@@ -1,9 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect} from 'react'
 import Card from './shared/Card';
 import Button from './shared/Button';
 import RatingSelect from './RatingSelect';
+import FeedbackContext from '../context/FeedbackContext';
 
 const FeedbackForm = () => {
+
+  const { addFeedback, feedbackEdit,updateFeedback} = useContext(FeedbackContext);
 
   const [text, setText] = useState("");  
   const [rating, setRating] = useState(3);
@@ -33,9 +36,25 @@ const FeedbackForm = () => {
         rating
       }
 
-      console.log(newFeedback);
+      if(feedbackEdit.edit === true){
+        updateFeedback(feedbackEdit.item.id, newFeedback)
+      } else {
+        addFeedback(newFeedback);
+      }
+      
     }
+    setText("");
+    setBtnDisabled(true);
+    feedbackEdit.edit = false;
   }
+
+  useEffect(() => {
+    if(feedbackEdit.edit === true){
+      setBtnDisabled(false);
+      setText(feedbackEdit.item.text);
+      setRating(feedbackEdit.item.rating)
+    }
+  }, [feedbackEdit])
   
   return (
     <Card>
@@ -46,7 +65,9 @@ const FeedbackForm = () => {
 
         <div className='input-group'>
           <input onChange={handleTextChange} type="text" placeholder='Write a review' value={text}/>
-          <Button type='submit' isDisabled={btnDisabled}>Send</Button>
+          <Button type='submit' isDisabled={btnDisabled}>
+            {feedbackEdit.edit === true ? "update" : "send"}
+          </Button>
         </div>
 
         {message && <div className='message'>

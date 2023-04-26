@@ -5,26 +5,19 @@ import FeedbackList from './components/FeedbackList';
 import FeedbackData from "./data/FeedbackData";
 import Feedbackstats from './components/Feedbackstats';
 import FeedbackForm from './components/FeedbackForm';
+import { FeedbackProvider } from './context/FeedbackContext';
 
 function App() {
 
-  const [feedback, setFeedback] = useState(FeedbackData);
-  
-  const handleClick = (id) => {
-    if(window.confirm("Are you sure")){
-      setFeedback(feedback.filter((item) => item.id !== id))
-    }
-  }
-
   return (
-    <div>
+    <FeedbackProvider>
       <Header/>
       <div className='container'>
         <FeedbackForm/>
-        <Feedbackstats feedback={feedback}/>
-        <FeedbackList feedback={feedback} handleClick={handleClick}/>
+        <Feedbackstats/>
+        <FeedbackList/>
       </div>
-    </div>
+    </FeedbackProvider>
   )
 }
 
