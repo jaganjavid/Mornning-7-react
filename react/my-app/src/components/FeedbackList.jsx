@@ -5,7 +5,11 @@ import FeedbackContext from '../context/FeedbackContext';
 
 const FeedbackList = () => {
 
-  const { feedback } = useContext(FeedbackContext);
+  const { feedback, isLoading} = useContext(FeedbackContext);
+
+  if(isLoading){
+    return <h3>Loading ...</h3>
+  }
 
   if(feedback.length === 0){
     return <h4 style={{textAlign:"center", marginTop:"20px"}}>There is no item</h4>
