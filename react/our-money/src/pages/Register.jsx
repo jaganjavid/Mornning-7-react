@@ -3,6 +3,9 @@ import { useForm } from '@mantine/form';
 import { Link, useNavigate} from "react-router-dom";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { fireDb } from "../firebase-config";
+import { useDispatch } from "react-redux";
+import { ShowLoading, HideLoading } from "../redux/alertsSlice";
+import { notifications } from '@mantine/notifications';
 
 const Register = () => {
 
@@ -14,7 +17,9 @@ const Register = () => {
             email:"",
             password:""
         }
-    });
+    });    
+
+    const dispatch = useDispatch();
 
     const navigate = useNavigate();
 
@@ -23,6 +28,7 @@ const Register = () => {
        e.preventDefault();
 
        try{
+        dispatch(ShowLoading());
         // Check if user alreaday exist
         const qry = query(
             collection(fireDb, "users"),
@@ -31,14 +37,26 @@ const Register = () => {
         const existingUsers = await getDocs(qry);
 
         if(existingUsers.size > 0){
-            alert("User already exist")
+            notifications.show({
+                title: 'User already Exist',
+                color:"red",
+                autoClose: 3000,
+            })
+            dispatch(HideLoading());
         } else {
             const response = await addDoc(collection(fireDb, "users"), 
             registerForm.values);
-            alert("User Register Successfully")
+            notifications.show({
+                title: 'User Created Successfully',
+                message: 'Please login',
+                color:"green",
+                autoClose: 3000,
+            })
+            dispatch(HideLoading());
             navigate("/login");
         }
        } catch(error){
+          dispatch(HideLoading());
           console.log(error);
        }
     }
