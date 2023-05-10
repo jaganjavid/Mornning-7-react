@@ -3,6 +3,8 @@ import { useForm } from '@mantine/form';
 import { Link, useNavigate} from "react-router-dom";
 import { collection, query,getDocs, where } from "firebase/firestore";
 import { fireDb } from "../firebase-config";
+import { showNotification } from "@mantine/notifications";
+import CryptoJS from "crypto-js";
 
 const Login = () => {
 
@@ -27,19 +29,48 @@ const Login = () => {
          const qry = query(
             collection(fireDb, "users"),
             where("email" ,"==", loginForm.values.email),
-            where("password" ,"==", loginForm.values.password),
         )
         const existingUsers = await getDocs(qry);
 
         if(existingUsers.size > 0){
-            const storeInLs = {
-                name: existingUsers.docs[0].data().name,
-                email: existingUsers.docs[0].data().email,
-                id: existingUsers.docs[0].id
+
+
+            // Decrypt password
+
+            const decryptedPassword = CryptoJS.AES.decrypt(
+                existingUsers.docs[0].data().password,
+                "hwguyt6w8ygr2496wf5iyg3ir438767f6"
+            ).toString(CryptoJS.enc.Utf8);
+
+            if(decryptedPassword === loginForm.values.password){
+                const storeInLs = {
+                    name: existingUsers.docs[0].data().name,
+                    email: existingUsers.docs[0].data().email,
+                    id: existingUsers.docs[0].id
+                }
+    
+                localStorage.setItem("user", JSON.stringify(storeInLs));
+                showNotification({
+                    title:"User Logged in succesfully",
+                    color:"green",
+                    autoClose: 3000
+                })
+                navigate("/");
+            } else{
+                showNotification({
+                    title:"Password not matching",
+                    color:"red",
+                    autoClose: 3000
+                })
             }
 
-            localStorage.setItem("user", JSON.stringify(storeInLs));
-            navigate("/");
+          
+        } else {
+            showNotification({
+                title:"User Not Found",
+                color:"red",
+                autoClose: 3000
+            })
         }
         
        } catch(error){

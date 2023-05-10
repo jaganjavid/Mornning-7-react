@@ -5,7 +5,8 @@ import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { fireDb } from "../firebase-config";
 import { useDispatch } from "react-redux";
 import { ShowLoading, HideLoading } from "../redux/alertsSlice";
-import { notifications } from '@mantine/notifications';
+import {showNotification } from '@mantine/notifications';
+import CryptoJS from "crypto-js";
 
 const Register = () => {
 
@@ -37,23 +38,43 @@ const Register = () => {
         const existingUsers = await getDocs(qry);
 
         if(existingUsers.size > 0){
-            notifications.show({
+            showNotification({
                 title: 'User already Exist',
                 color:"red",
                 autoClose: 3000,
             })
             dispatch(HideLoading());
         } else {
-            const response = await addDoc(collection(fireDb, "users"), 
-            registerForm.values);
-            notifications.show({
-                title: 'User Created Successfully',
-                message: 'Please login',
-                color:"green",
-                autoClose: 3000,
-            })
-            dispatch(HideLoading());
-            navigate("/login");
+
+            // encrypted password
+            const entryptedPassword = CryptoJS.AES.encrypt(
+                registerForm.values.password,
+                "hwguyt6w8ygr2496wf5iyg3ir438767f6",
+            ).toString();
+
+            const response = await addDoc(collection(fireDb, "users"),{
+            ...registerForm.values,
+            password: entryptedPassword
+            });
+
+            console.log(response.id);
+            if(response.id){
+                showNotification({
+                    title: 'User Created Successfully',
+                    message: 'Please login',
+                    color:"green",
+                    autoClose: 3000,
+                })
+                dispatch(HideLoading());
+                navigate("/login");
+            } else {
+                showNotification({
+                    title: 'Invalid Credential',
+                    color:"red",
+                    autoClose: 3000,
+                })
+            }
+          
         }
        } catch(error){
           dispatch(HideLoading());
